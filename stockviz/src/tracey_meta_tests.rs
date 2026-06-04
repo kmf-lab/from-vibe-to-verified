@@ -29,6 +29,7 @@ fn scripts_inventory_present() {
         "fuzz_csv.sh",
         "fuzz_pipeline.sh",
         "fuzz_coverage.sh",
+        "seed_csv_corpus.sh",
         "seed_pipeline_corpus.sh",
     ] {
         let p = root.join(name);
@@ -231,6 +232,32 @@ fn nextest_script_invokes_cargo_nextest() {
     assert!(text.contains("cargo nextest"));
 }
 
+// r[impl repo.scripts]
+// r[verify repo.scripts]
+#[test]
+fn scripts_resolve_stockviz_crate_root_not_git_toplevel() {
+    let scripts = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("scripts");
+    assert!(scripts.join("_stockviz_root.sh").is_file());
+    for name in [
+        "check_fmt.sh",
+        "nextest_default.sh",
+        "coverage.sh",
+        "tracey_report.sh",
+        "fuzz_coverage.sh",
+    ] {
+        let text = std::fs::read_to_string(scripts.join(name))
+            .unwrap_or_else(|e| panic!("read {name}: {e}"));
+        assert!(
+            !text.contains("rev-parse --show-toplevel"),
+            "{name} must not use git monorepo toplevel"
+        );
+        assert!(
+            text.contains("_stockviz_root.sh"),
+            "{name} must source _stockviz_root.sh"
+        );
+    }
+}
+
 // r[impl talk.llvm.cov]
 // r[verify talk.llvm.cov]
 #[test]
@@ -251,6 +278,20 @@ fn mutants_script_and_config_present() {
     assert!(!sh.contains("cargo mutants run"));
     let toml = std::fs::read_to_string(root.join(".cargo/mutants.toml")).expect("mutants.toml");
     assert!(toml.contains("exclude_globs"));
+}
+
+// r[impl talk.fuzz.setup]
+// r[verify talk.fuzz.setup]
+#[test]
+fn fuzz_oom_artifact_present() {
+    let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let artifact = root.join(
+        "fuzz/artifacts/my_target/oom-7fc036367c008997f59b0adc14d213e7423b8b29",
+    );
+    assert!(
+        artifact.is_file(),
+        "missing OOM regression artifact {artifact:?} (run ./scripts/seed_pipeline_corpus.sh or bootstrap_fuzz_corpus.py oom)"
+    );
 }
 
 // r[impl talk.fuzz.setup]

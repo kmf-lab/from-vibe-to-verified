@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # r[build.provider.exclusive] r[repo.scripts]
 set -euo pipefail
-ROOT="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
+# shellcheck source=_stockviz_root.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_stockviz_root.sh"
+ROOT="$STOCKVIZ_ROOT"
 cd "$ROOT"
 tmp="$(mktemp)"
 cleanup() { rm -f "$tmp"; }

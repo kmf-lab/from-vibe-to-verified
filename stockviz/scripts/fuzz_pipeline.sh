@@ -2,7 +2,9 @@
 # r[impl talk.fuzz.setup] r[impl repo.scripts] r[impl test.fuzz.pipeline]
 # General pipeline fuzz (CSV/JSON + chart math). Requires nightly + cargo-fuzz.
 set -euo pipefail
-ROOT="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
+# shellcheck source=_stockviz_root.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_stockviz_root.sh"
+ROOT="$STOCKVIZ_ROOT"
 cd "$ROOT/fuzz"
 export RUSTUP_TOOLCHAIN="${RUSTUP_TOOLCHAIN:-nightly}"
 FUZZ_ARGS=("$@")

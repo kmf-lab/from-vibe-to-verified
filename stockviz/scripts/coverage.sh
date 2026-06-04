@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # r[impl repo.scripts] r[impl talk.llvm.cov]
 set -euo pipefail
-ROOT="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
+# shellcheck source=_stockviz_root.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_stockviz_root.sh"
+ROOT="$STOCKVIZ_ROOT"
 cd "$ROOT"
 EXTRA=()
 if [[ "${STOCKVIZ_COVERAGE_STRICT:-}" == 1 ]]; then

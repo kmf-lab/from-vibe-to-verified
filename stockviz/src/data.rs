@@ -433,6 +433,59 @@ mod tests {
         assert!(parse_csv_str(s).is_err());
     }
 
+    // r[impl test.fuzz.csv]
+    // r[impl talk.fuzz.setup]
+    /// Writes `fuzz/corpus/csv_parse/*`. Run: `./scripts/seed_csv_corpus.sh`
+    #[test]
+    #[ignore]
+    fn write_csv_corpus_seeds() {
+        use std::fs;
+        use std::path::PathBuf;
+
+        let dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("fuzz/corpus/csv_parse");
+        fs::create_dir_all(&dir).expect("corpus dir");
+
+        let seeds: [(&str, &[u8]); 7] = [
+            (
+                "valid_minimal.csv",
+                b"Date,Open,High,Low,Close,Volume\n\
+2020-01-01,10,12,9,11,100\n\
+2020-01-02,11,11,10,10,200\n",
+            ),
+            (
+                "bad_header.csv",
+                b"Date,Open,High,Low,Close,Vol\n2020-01-01,1,1,1,1,10\n",
+            ),
+            (
+                "negative_volume.csv",
+                b"Date,Open,High,Low,Close,Volume\n\
+2020-01-01,10,12,9,11,100\n\
+2020-01-02,11,13,10,12,-1\n",
+            ),
+            (
+                "non_finite_close.csv",
+                b"Date,Open,High,Low,Close,Volume\n\
+2020-01-01,10,12,9,inf,100\n\
+2020-01-02,11,13,10,12,200\n",
+            ),
+            (
+                "unsorted_dates.csv",
+                b"Date,Open,High,Low,Close,Volume\n\
+2020-01-02,11,13,10,12,200\n\
+2020-01-01,10,12,9,11,100\n",
+            ),
+            (
+                "wrong_column_count.csv",
+                b"Date,Open,High,Low,Close,Volume\n2020-01-01,1,1,1,1\n",
+            ),
+            ("invalid_utf8.bin", b"\xff\xfe\x00"),
+        ];
+
+        for (name, bytes) in seeds {
+            fs::write(dir.join(name), bytes).expect("write seed");
+        }
+    }
+
     // r[impl data.validation]
     fn sample_bar() -> Bar {
         Bar {

@@ -3,7 +3,9 @@
 # Runs eikopf/tracey (v1.x): validate, status, and (strict) uncovered/untested gates.
 # Requires `tracey` on PATH and a running workspace daemon (`tracey daemon` or implicit).
 set -euo pipefail
-ROOT="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
+# shellcheck source=_stockviz_root.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_stockviz_root.sh"
+ROOT="$STOCKVIZ_ROOT"
 cd "$ROOT"
 
 if ! command -v tracey >/dev/null 2>&1; then

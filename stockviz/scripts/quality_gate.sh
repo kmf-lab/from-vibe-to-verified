@@ -2,7 +2,9 @@
 # r[impl repo.scripts] r[impl talk.quality.gate] r[impl talk.ci.tiers]
 # Main-branch quality gate: strict tracey + minimum line coverage.
 set -euo pipefail
-ROOT="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
+# shellcheck source=_stockviz_root.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_stockviz_root.sh"
+ROOT="$STOCKVIZ_ROOT"
 cd "$ROOT"
 
 export STOCKVIZ_TRACEY_STRICT=1

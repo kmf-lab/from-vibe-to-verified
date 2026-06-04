@@ -409,7 +409,7 @@ Normative pipeline fuzz harness (`my_target`: CSV and/or Twelve Data JSON → ch
 r[repo.scripts]
 
 Repository bash entrypoints under scripts/.
-- The repository **must** ship **executable** **`bash`** scripts under **`scripts/`**, each using **`set -euo pipefail`** and changing to the repo root (`git rev-parse --show-toplevel` or equivalent) so they work from any working directory.
+- The repository **must** ship **executable** **`bash`** scripts under **`scripts/`**, each using **`set -euo pipefail`** and changing to the **stockviz crate root** (`scripts/_stockviz_root.sh` or equivalent) so they work from any working directory (including when the git toplevel is the parent monorepo).
 - **Tracy** vs **tracey:** **Tracy** is the **CPU profiler** used with **`tracing`** spans (**`r[test.tracing]`**, §5). **tracey** is the **spec-tag coverage** tool (**`r[test.tracey.workflow]`**, **`r[test.tracey.coverage]`**). Do not conflate them in docs or script names.
 - **CI alignment:** Continuous integration **should** invoke these scripts (or the exact same commands they wrap) so local runs and CI stay identical. See [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 

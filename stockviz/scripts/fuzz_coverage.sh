@@ -2,13 +2,15 @@
 # r[impl repo.scripts] r[impl test.fuzz.pipeline]
 # Run `cargo fuzz coverage` for my_target and print llvm-cov line summary for core modules.
 set -euo pipefail
-ROOT="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)"
+# shellcheck source=_stockviz_root.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_stockviz_root.sh"
+ROOT="$STOCKVIZ_ROOT"
 cd "$ROOT"
 export RUSTUP_TOOLCHAIN="${RUSTUP_TOOLCHAIN:-nightly}"
 
 TARGET="${STOCKVIZ_FUZZ_COVERAGE_TARGET:-my_target}"
-echo "fuzz_coverage: generating profdata for ${TARGET} (corpus: fuzz/corpus/${TARGET})"
-(cd fuzz && cargo fuzz coverage "${TARGET}")
+echo "fuzz_coverage: generating profdata for ${TARGET} (corpus: ${ROOT}/fuzz/corpus/${TARGET})"
+(cd "$ROOT/fuzz" && cargo fuzz coverage "${TARGET}")
 
 PROFDATA="$ROOT/fuzz/coverage/${TARGET}/coverage.profdata"
 if [[ ! -f "$PROFDATA" ]]; then

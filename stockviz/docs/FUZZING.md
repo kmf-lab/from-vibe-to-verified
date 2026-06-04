@@ -52,7 +52,7 @@ Fuzz binaries link `stockviz` with `default-features = false` and **`twelve-data
 
 Implementation: [`src/fuzz_harness.rs`](../src/fuzz_harness.rs), [`fuzz/fuzz_targets/my_target.rs`](../fuzz/fuzz_targets/my_target.rs).
 
-Regenerate seeds: `./scripts/seed_pipeline_corpus.sh`.
+Regenerate seeds: `./scripts/seed_csv_corpus.sh` (parser) and `./scripts/seed_pipeline_corpus.sh` (pipeline). If the test crate does not compile yet, `python3 scripts/bootstrap_fuzz_corpus.py all` writes the same corpora and OOM artifact without building.
 
 ---
 

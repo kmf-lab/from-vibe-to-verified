@@ -2,7 +2,7 @@
 
 Normative inventory and **`r[repo.scripts]`** are in [stock_viz_spec.md](../stock_viz_spec.md) §6.
 
-All scripts are **`bash`** with **`set -euo pipefail`** and assume you run them from anywhere (they `cd` to the repo root via `git rev-parse --show-toplevel`).
+All scripts are **`bash`** with **`set -euo pipefail`** and assume you run them from anywhere (they `cd` to the **stockviz crate root** via **`scripts/_stockviz_root.sh`**, not the outer git monorepo root).
 
 ## Rust toolchain
 
@@ -28,7 +28,9 @@ Full guide: [docs/FUZZING.md](../docs/FUZZING.md). Shared **`Arbitrary`** types:
 |--------|--------|------|
 | **`fuzz_csv.sh`** | `csv_parse` | Arbitrary bytes → `parse_csv_bytes` |
 | **`fuzz_pipeline.sh`** | `my_target` | `PipelineFuzzInput` (`Arbitrary`) pipeline |
+| **`seed_csv_corpus.sh`** | — | Regenerate `fuzz/corpus/csv_parse/*` |
 | **`seed_pipeline_corpus.sh`** | — | Regenerate `fuzz/corpus/my_target/seed_*` |
+| **`bootstrap_fuzz_corpus.py`** | — | Write corpora + OOM artifact without `cargo test` (fallback) |
 | **`fuzz_coverage.sh`** | `my_target` | `cargo fuzz coverage` + **llvm-cov** summary/HTML |
 
 - Usually requires a **nightly** toolchain for `libfuzzer-sys`.  
