@@ -125,9 +125,9 @@ bacon test    # background watch
 | `gui.chart` | 3 | `src/gui/mod.rs`, `src/chart.rs` | `src/chart.rs`, kittest | chart window |
 | `gui.chart.candles` | 3 | `src/gui/app.rs`, `src/chart.rs` | `src/chart.rs` | green/red candles + SMAs |
 | `gui.chart.volume` | 3 | `src/gui/app.rs`, `src/chart.rs` | kittest + chart | volume pane |
-| `gui.chart.timeaxis` | 3 | `src/gui/app.rs` | kittest | daily dates |
+| `gui.chart.timeaxis` | 3 | `src/gui/app.rs` | kittest | daily dates at bottom |
 | `gui.chart.anchor` | 3 | `src/data.rs` | `src/data.rs` | right edge |
-| `gui.chart.xticks` | 3 | `src/gui/app.rs` | kittest | sparse date labels |
+| `gui.chart.xticks` | 3 | `src/gui/app.rs`, `src/chart.rs` | kittest + chart | sparse date labels at bottom |
 | `gui.chart.yticks` | 3 | `src/chart.rs`, `src/gui/app.rs` | `src/chart.rs`, kittest | right price labels |
 | `gui.chart.sma.legend` | 3 | `src/chart.rs`, `src/gui/app.rs` | `src/chart.rs`, kittest | SMA 50/150 legend |
 | `gui.chart.zoom` | 3 | `src/gui/app.rs` | kittest | +/- buttons |

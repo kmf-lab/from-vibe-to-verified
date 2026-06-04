@@ -224,7 +224,8 @@ Volume pane.
 - **Layout:** **Stacked panes**—**price pane** (**`r[gui.chart.candles]`** + SMA) **above**; **volume pane** (**histogram**) **below**. No side or third panels.
 - **Height split:** allocate **~78%** of the **client chart area** to the price pane and **~22%** to the volume pane, with a **minimum volume strip height of 96 px**. If the window is too short to satisfy defaults, **shrink the price pane first** until the volume strip is at least **96 px** (never drop the volume pane entirely).
 - **Horizontal coupling:** Volume shares the **same visible time range**, **`D_anchor`**, **zoom level**, **resize behavior**, **shared drawable chart geometry** (**`r[gui.chart.pane.align]`**, including the Y-label margin reserved by **`r[gui.chart.yticks]`**), and **horizontal pixel-column bucketing** as the price pane (**`r[gui.chart.anchor]`**, **`r[gui.chart.zoom]`**, **`r[gui.chart.resize]`**, **`r[gui.chart.xticks]`**). **Vertical** scaling is independent (price auto-scales on OHLC/SMA; volume auto-scales on volume).
-- **Bars:** One vertical bar per **visible bucket** (one per day when not compressed). **Width** matches candle/body horizontal spacing; baseline at the **bottom** of the volume pane.
+- **Bars:** One vertical bar per **visible bucket** (one per day when not compressed). **Width** matches candle/body horizontal spacing; baseline at the **bottom** of the volume **histogram** area (above the date axis strip per **`r[gui.chart.xticks]`**).
+- **Date axis strip:** Reserve a fixed **~16 px** band at the **bottom** of the volume pane for X-axis date labels (**`r[gui.chart.xticks]`**). Volume histogram bars **must not** draw into this strip.
 - **Colors:** Match the **paired candle** for that bucket: bull **#26a69a**, bear **#ef5350** (same **`Close >= Open`** / **`<`** rule as price).
 - **Y scale:** Auto-scale from **0** through **max summed volume** in the **visible** window (post-bucketing). **Y-axis numeric labels optional**; if shown, they **must not clip** bars.
 - **Aggregation:** When multiple days map to one horizontal bucket, **`sum`** `Volume` across rows in that bucket (normative; pairs with OHLC aggregation in **`r[gui.chart.candles]`**).
@@ -244,6 +245,7 @@ Right-edge anchor date.
 
 r[gui.chart.xticks]
 
+- **Location:** sparse date labels render at the **very bottom** of the chart area—in the reserved strip below the volume histogram (**`r[gui.chart.volume]`**), aligned to the **shared drawable chart width** (**`r[gui.chart.pane.align]`**). The price pane **must not** draw date labels.
 - Date labels on the X-axis are **sparse**—avoid labeling every bar.  
 - Choose tick granularity (**week, month, quarter**, or coarser) from **available horizontal space** and **zoom level**, preferring **nice calendar boundaries** so labels stay readable.  
 - Exact heuristic is implementation-defined but must be covered by tests tagged to this requirement.

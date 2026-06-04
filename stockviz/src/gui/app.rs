@@ -242,7 +242,6 @@ impl StockvizApp {
     // r[impl gui.chart.sma.align]
     // r[impl gui.chart.width.fill]
     // r[impl gui.chart.pane.align]
-    // r[impl gui.chart.xticks]
     // r[impl gui.chart.yticks]
     // r[impl gui.chart.sma.legend]
     fn paint_price(&self, painter: &egui::Painter, rect: Rect, slice: &[Bar], start_idx: usize) {
@@ -308,9 +307,21 @@ impl StockvizApp {
 
         self.paint_price_yticks(painter, rect, ymin, ymax, &y_scale);
         self.paint_sma_legend(painter, chart_rect);
+    }
 
+    // r[impl gui.chart.xticks]
+    // r[impl gui.chart.pane.align]
+    fn paint_date_xticks(
+        painter: &egui::Painter,
+        chart_rect: Rect,
+        date_strip: Rect,
+        buckets: &[chart::Bucket<'_>],
+        col_w: f32,
+    ) {
+        let w = chart_rect.width();
         let n_labels = (w / 120.0).floor().max(1.0) as usize;
         let step = (buckets.len() / n_labels).max(1);
+        let font = egui::FontId::monospace(10.0);
         for i in (0..buckets.len()).step_by(step) {
             if buckets[i].rows.is_empty() {
                 continue;
@@ -318,20 +329,34 @@ impl StockvizApp {
             let d = buckets[i].rows[0].date;
             let x = chart_rect.left() + i as f32 * col_w;
             painter.text(
-                Pos2::new(x, chart_rect.bottom() - 14.0),
-                Align2::LEFT_TOP,
+                Pos2::new(x, date_strip.bottom() - 2.0),
+                Align2::LEFT_BOTTOM,
                 d.format("%Y-%m-%d").to_string(),
-                egui::FontId::monospace(10.0),
+                font.clone(),
                 Color32::GRAY,
             );
         }
     }
 
     // r[impl gui.chart.volume]
+    // r[impl gui.chart.xticks]
+    fn volume_histogram_and_date_strip(pane_rect: Rect) -> (Rect, Rect) {
+        let drawable = Self::chart_drawable_rect(pane_rect);
+        let hist_bottom = (pane_rect.bottom() - chart::DATE_AXIS_HEIGHT_PX).max(drawable.top() + 1.0);
+        let histogram = Rect::from_min_max(drawable.left_top(), Pos2::new(drawable.right(), hist_bottom));
+        let date_strip = Rect::from_min_max(
+            Pos2::new(drawable.left(), histogram.bottom()),
+            Pos2::new(drawable.right(), pane_rect.bottom()),
+        );
+        (histogram, date_strip)
+    }
+
+    // r[impl gui.chart.volume]
     // r[impl gui.chart.width.fill]
     // r[impl gui.chart.pane.align]
+    // r[impl gui.chart.xticks]
     fn paint_volume(&self, painter: &egui::Painter, rect: Rect, slice: &[Bar]) {
-        let chart_rect = Self::chart_drawable_rect(rect);
+        let (chart_rect, date_strip) = Self::volume_histogram_and_date_strip(rect);
         let w = chart_rect.width().max(1.0);
         let h = chart_rect.height().max(1.0);
         let width_px = w as usize;
@@ -359,6 +384,14 @@ impl StockvizApp {
                 color,
             );
         }
+
+        Self::paint_date_xticks(
+            painter,
+            Self::chart_drawable_rect(rect),
+            date_strip,
+            &buckets,
+            col_w,
+        );
     }
 }
 
@@ -382,8 +415,7 @@ impl eframe::App for StockvizApp {
 
         egui::CentralPanel::default().show_inside(ui, |ui| {
             let avail = ui.available_size();
-            let vol_h = (avail.y * 0.22).max(96.0).min(avail.y * 0.45);
-            let price_h = (avail.y - vol_h).max(40.0);
+            let (price_h, vol_h) = chart::stacked_pane_heights(avail.y);
 
             let price_w = avail.x.max(1.0);
             self.apply_resize_widen(price_w);

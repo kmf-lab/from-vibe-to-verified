@@ -218,6 +218,28 @@ pub fn bars_fitting_width(price_w: f32, min_px_per_bar: f32) -> usize {
 /// Right margin reserved for price labels in the price pane.
 pub const PRICE_LABEL_MARGIN_PX: f32 = 48.0;
 
+// r[impl gui.chart.volume]
+/// Minimum volume pane height (**`r[gui.chart.volume]`**).
+pub const MIN_VOLUME_PANE_HEIGHT_PX: f32 = 96.0;
+
+// r[impl gui.chart.xticks]
+/// Reserved strip at the bottom of the volume pane for date labels.
+pub const DATE_AXIS_HEIGHT_PX: f32 = 16.0;
+
+// r[impl gui.chart.volume]
+const VOLUME_PANE_FRACTION: f32 = 0.22;
+
+// r[impl gui.chart.volume]
+/// Price + volume pane heights; always sums to `avail_y` (**`r[gui.chart.volume]`**).
+pub fn stacked_pane_heights(avail_y: f32) -> (f32, f32) {
+    let avail_y = avail_y.max(1.0);
+    let vol_h = (avail_y * VOLUME_PANE_FRACTION)
+        .max(MIN_VOLUME_PANE_HEIGHT_PX)
+        .min(avail_y);
+    let price_h = avail_y - vol_h;
+    (price_h, vol_h)
+}
+
 // r[impl gui.chart.pane.align]
 /// Shared drawable chart width for price and volume panes (excludes Y-label margin).
 pub fn pane_chart_width_px(full_pane_width_px: f32) -> f32 {
@@ -419,6 +441,20 @@ mod tests {
             let last = last_bar_center_x(bars.len(), left, chart_w, width_px);
             assert!(last <= pane_chart_right(left, full_w) + 1e-3);
         }
+    }
+
+    // r[impl gui.chart.volume]
+    // r[verify gui.chart.volume]
+    #[test]
+    fn stacked_pane_heights_reserves_minimum_volume_strip() {
+        let (price, vol) = stacked_pane_heights(150.0);
+        assert!((price + vol - 150.0).abs() < 1e-3);
+        assert!((vol - MIN_VOLUME_PANE_HEIGHT_PX).abs() < 1e-3);
+        assert!(price > 0.0);
+
+        let (price_short, vol_short) = stacked_pane_heights(50.0);
+        assert!((price_short + vol_short - 50.0).abs() < 1e-3);
+        assert!((vol_short - 50.0).abs() < 1e-3);
     }
 
     // r[impl gui.chart.volume]

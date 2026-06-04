@@ -58,8 +58,8 @@ rg 'r\[cli\.download\]' stock_viz_spec.md docs/talk_tags_spec.md
 
 Expected for `gui.chart.volume`:
 
-- `src/gui/app.rs` — `paint_volume`
-- `src/chart.rs` — `volume_sum`, `buckets_for_width` (dual-tagged with candles)
+- `src/gui/app.rs` — `paint_volume`, `volume_histogram_and_date_strip`, `stacked_pane_heights` usage
+- `src/chart.rs` — `volume_sum`, `stacked_pane_heights`, `buckets_for_width` (dual-tagged with candles)
 
 ## Anti-patterns
 

@@ -126,13 +126,24 @@ fn kittest_resize_wider_shows_more_history() {
 // r[impl test.kittest.volume]
 // r[verify test.kittest.volume]
 // r[verify gui.chart.volume]
-// r[verify gui.chart.pane.align]
 // r[verify gui.chart.candles]
 #[test]
 fn kittest_volume_marker_present() {
     let mut harness = build_harness(Vec2::new(640.0, 480.0));
     harness.run_ok();
     let _n = harness.get_by_label("__stockviz_volume__");
+}
+
+// r[impl test.kittest.volume]
+// r[verify gui.chart.volume]
+#[test]
+fn kittest_short_window_keeps_volume_pane() {
+    let mut harness = build_harness(Vec2::new(640.0, 150.0));
+    harness.run_ok();
+    let _ = harness.get_by_label("__stockviz_volume__");
+    let (price_h, vol_h) = crate::chart::stacked_pane_heights(150.0);
+    assert!((vol_h - crate::chart::MIN_VOLUME_PANE_HEIGHT_PX).abs() < 1e-3);
+    assert!((price_h + vol_h - 150.0).abs() < 1e-3);
 }
 
 // r[impl test.kittest.resize]
@@ -171,6 +182,7 @@ fn kittest_price_volume_share_drawable_width() {
 
 // r[impl test.kittest.resize]
 // r[verify gui.chart.xticks]
+// r[verify gui.chart.timeaxis]
 #[test]
 fn kittest_narrow_window_exercises_chart_paint_path() {
     let mut harness = build_harness(Vec2::new(480.0, 400.0));
